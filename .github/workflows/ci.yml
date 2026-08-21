@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+          SOLANA_RPC_URL: https://api.devnet.solana.com
+          CHANNEL_VAULT_PROGRAM_ID: 11111111111111111111111111111111
+          CHANNEL_VAULT_NETWORK: solana:devnet
+          PUBLIC_APP_ORIGIN: http://localhost:3000
